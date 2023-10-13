@@ -1,0 +1,41 @@
+.navigate {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  margin-left: 5px;
+
+  ul {
+    border-radius: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: black;
+   
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    height: 95%;
+    width: 100%;
+    list-style-type: none;
+
+    li {
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+
+    //'Link to' são renderizados como 'a'
+    a{
+        color: white;
+        font-size: 2rem;
+        text-decoration: none;
+    }
+   
+
+    a:hover {
+        transition: 0.5s;
+        color: red;
+        cursor: pointer;
+    }
+  }
+}

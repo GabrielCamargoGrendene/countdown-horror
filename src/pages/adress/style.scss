@@ -1,0 +1,31 @@
+.container-calendar,
+.container-adress {
+  display: flex;
+  width: 40%;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.container-adress, .container-calendar {
+  flex-direction: column;
+
+  .container-input-button, .container-input-calendar {
+    display: flex;
+    margin-top: 5px;
+    gap: 5px;
+  }
+}
+
+button {
+  background-color: red;
+  cursor: pointer;
+}
+
+// .container-button{
+//   display: flex;
+//   align-self: flex-end;
+//   justify-content: center;
+//   margin-bottom: 20rem;
+// }
+
