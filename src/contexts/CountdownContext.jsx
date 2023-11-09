@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 
 export const CountdownContext = createContext({});
 
@@ -14,72 +14,53 @@ export function CountdownContextProvider({ children }) {
   const [themeFreddy, setThemeFreddy] = useState(true)
   const [difference, setDifference] = useState({});
 
-  
+  const [timerDays, setTimerDays] = useState(0);
+  const [timerHours, setTimerHours] = useState(0);
+  const [timerMinutes, setTimerMinutes] = useState(0);
+  const [timerSeconds, setTimerSeconds] = useState(0);
 
-  let timer = 0;
+  let interval = useRef()
 
-  
+  function calcDifference(chosenDate) { 
+    //trabalhar nos calculos de numeros negativos para quando o Input é um horário anterior ao horário presente
+    interval.current = setInterval(() => {
+      console.log(interval)
+    let now = new Date().getTime();
+    let distance = chosenDate - now
 
-  function convertNegative(data) {
-    if(Math.sign(data) === -1) {
-    return (data * -1)
+    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      console.log(distance)
+
+    if(distance < 0) {
+      clearInterval(interval.current)
+      setTimerDays(0);
+      setTimerHours(0);
+      setTimerMinutes(0);
+      setTimerSeconds(0);
+      alert('Não olhe pra trás')
     } else {
-      return data 
-    } 
-  }
+      
+      setTimerDays(days);
+      setTimerHours(hours);
+      setTimerMinutes(minutes);
+      setTimerSeconds(seconds);
 
-  function calcDifference() { //trabalhar nos calculos de numeros negativos para quando o Input é um horário anterior ao horário presente
-    setRemainTime(59);
-
-    let now = new Date();
-
-    let nowObj = {
-      day: now.getDate(),
-      month: now.getMonth() + 1,
-      year: now.getFullYear(),
-      hour: now.getHours(),
-      minutes: now.getMinutes(),
-      seconds: remainTime,
-    };
-
-    let monthDifference = (date.month - nowObj.month)
-    let dayMonth = 30 * monthDifference
-    let hourDifference = date.hour - nowObj.hour
-    let dayDifference = date.day - nowObj.day + dayMonth
-    let minutesDifference = date.minutes - nowObj.minutes
-
-   
-    hourDifference = convertNegative(hourDifference)
-    minutesDifference = convertNegative(minutesDifference)
-  
-
-
-    setDifference({
-      month: monthDifference,
-      year: date.year - nowObj.year,
-      hour: hourDifference,
-      day: dayDifference,
-      minutes: minutesDifference,
-      seconds: remainTime,
-    });
-
-    console.log(difference.day);
-  }
+      if(days == 0 && hours == 0 && minutes == 0 && seconds <= 5){
+        document.querySelector('.countdown-container').classList.add("blink")
+      }
+    }
+  }, 1000);
+}
 
   function getDate(markedDate) {
-    clearTimeout(timer);
-    var currentDate = new Date(markedDate);
-    date = {
-      day: currentDate.getDate(),
-      month: currentDate.getMonth() + 1,
-      year: currentDate.getFullYear(),
-      hour: currentDate.getHours(),
-      minutes: currentDate.getMinutes(),
-      seconds: currentDate.getSeconds(),
-    };
+    clearInterval(interval.current)
+    var currentDate = new Date(markedDate).getTime();
 
     setFilledDate(true);
-    calcDifference();
+    calcDifference(currentDate);
     console.log(date);
     alert('Seu fim está próximo...')
   }
@@ -93,49 +74,6 @@ export function CountdownContextProvider({ children }) {
         setThemeFreddy(false)       
     }
   }
-
-  useEffect(() => {
-    if (remainTime >= 1 && filledDate == true) {
-       //ler sobre isso também pra tentar não pular segundos
-      timer = setTimeout(() => {
-        //ler sobre setInterval para continuar daqui
-        console.log("oi");
-        setRemainTime((remainTime) => remainTime - 1);
-      }, 1000);
-      //taoooo  
-    } else {
-      if (difference.minutes > 0) {
-        difference.minutes--;
-      }
-      else {
-        if (difference.hour > 0) {
-          difference.hour--;
-          difference.minutes = 59;
-        }
-        
-         else {
-          if (difference.day > 0) {
-            difference.day--;
-            difference.hour = 23;
-            difference.minutes = 59;
-          }
-        }
-      }
-      if(difference.minutes != 0 || difference.hour != 0 || difference.day != 0){
-      setRemainTime(59);
-      }
-      
-    }
-    if(difference.minutes == 0 && difference.hour == 0 && difference.day == 0 && remainTime <= 5){
-      document.querySelector('.countdown-container').classList.add("blink")
-    }
-
-    if(difference.minutes == 0 && difference.hour == 0 && difference.day == 0 && remainTime == 0){
-      clearTimeout()
-      alert('Não olhe pra trás!!!')
-    }
-  
-  }, [remainTime, difference, filledDate]);
 
   useEffect(() => {
     setScaryPhrase(`Iremos te buscar na ${adressJSON.logradouro} em ${adressJSON.cidade}/${adressJSON.estado}`);
@@ -163,7 +101,11 @@ export function CountdownContextProvider({ children }) {
          setThemeJason,
          changeTheme,
          themeFreddy,
-          setThemeFreddy
+          setThemeFreddy,
+          timerDays,
+          timerHours,
+          timerMinutes,
+          timerSeconds
       }}
     >
       {children}
